@@ -1,9 +1,81 @@
 #define BUZZER 9
 #define BAUD_RATE 115200
 
-#define UNIT_LENGTH_MILLIS 50
+#define UNIT_LENGTH_MILLIS 100
 
 
+class Morse {
+public:
+  char character;
+
+  // 6 because numbers have 5 significant characters each
+  // adding one filler character reveals the upper bound to be 6
+  int code[6];
+
+  Morse(char ch, int temp_code[6]) {
+    character = ch;
+
+    for (int i = 0; i < 6; i++) {
+      code[i] = temp_code[i];
+    }
+  }
+};
+
+// 9 is filler
+Morse alphabetRepresentation[36] = {
+  Morse('a', (int[]){ 1, 3, 9, 9, 9, 9 }),
+  Morse('b', (int[]){ 3, 1, 1, 1, 9, 9 }),
+  Morse('c', (int[]){ 3, 1, 3, 1, 9, 9 }),
+  Morse('d', (int[]){ 3, 1, 1, 9, 9, 9 }),
+  Morse('e', (int[]){ 1, 9, 9, 9, 9, 9 }),
+  Morse('f', (int[]){ 1, 1, 3, 1, 9, 9 }),
+  Morse('g', (int[]){ 3, 3, 1, 9, 9, 9 }),
+  Morse('h', (int[]){ 1, 1, 1, 1, 9, 9 }),
+  Morse('i', (int[]){ 1, 1, 9, 9, 9, 9 }),
+  Morse('j', (int[]){ 1, 3, 3, 3, 9, 9 }),
+  Morse('k', (int[]){ 3, 1, 3, 9, 9, 9 }),
+  Morse('l', (int[]){ 1, 3, 1, 1, 9, 9 }),
+  Morse('m', (int[]){ 3, 3, 9, 9, 9, 9 }),
+  Morse('n', (int[]){ 3, 1, 9, 9, 9, 9 }),
+  Morse('o', (int[]){ 3, 3, 3, 9, 9, 9 }),
+  Morse('p', (int[]){ 1, 3, 3, 1, 9, 9 }),
+  Morse('q', (int[]){ 3, 3, 1, 3, 9, 9 }),
+  Morse('r', (int[]){ 1, 3, 1, 9, 9, 9 }),
+  Morse('s', (int[]){ 1, 1, 1, 9, 9, 9 }),
+  Morse('t', (int[]){ 3, 9, 9, 9, 9, 9 }),
+  Morse('u', (int[]){ 1, 1, 3, 9, 9, 9 }),
+  Morse('v', (int[]){ 1, 1, 1, 3, 9, 9 }),
+  Morse('w', (int[]){ 1, 3, 3, 9, 9, 9 }),
+  Morse('x', (int[]){ 3, 1, 1, 3, 9, 9 }),
+  Morse('y', (int[]){ 3, 1, 3, 3, 9, 9 }),
+  Morse('z', (int[]){ 3, 3, 1, 1, 9, 9 }),
+  Morse('1', (int[]){ 1, 3, 3, 3, 3, 9 }),
+  Morse('2', (int[]){ 1, 1, 3, 3, 3, 9 }),
+  Morse('3', (int[]){ 1, 1, 1, 3, 3, 9 }),
+  Morse('4', (int[]){ 1, 1, 1, 1, 3, 9 }),
+  Morse('5', (int[]){ 1, 1, 1, 1, 1, 9 }),
+  Morse('6', (int[]){ 3, 1, 1, 1, 1, 9 }),
+  Morse('7', (int[]){ 3, 3, 1, 1, 1, 9 }),
+  Morse('8', (int[]){ 3, 3, 3, 1, 1, 9 }),
+  Morse('9', (int[]){ 3, 3, 3, 3, 1, 9 }),
+  Morse('0', (int[]){ 3, 3, 3, 3, 3, 9 }),
+};
+
+
+void pause(int time) {
+
+  digitalWrite(BUZZER, LOW);
+  delay(time * UNIT_LENGTH_MILLIS);
+}
+
+void play(int time) {
+  digitalWrite(BUZZER, HIGH);
+  delay(time * UNIT_LENGTH_MILLIS);
+  digitalWrite(BUZZER, LOW);
+}
+
+
+//================================STARTS================================
 
 void setup() {
   pinMode(BUZZER, OUTPUT);
@@ -14,65 +86,50 @@ void loop() {
   Serial.println("Enter data to be converted: ");
 
   // do nothing until data is received
-  while (Serial.available() == 0){};
+  while (Serial.available() == 0) {};
 
   String data = Serial.readString();
+  data.toLowerCase();
 
-  for(int i = 0; i < data.length(); i++)
-  {
+  for (int i = 0; i < data.length(); i++) {
 
     Serial.println(data[i]);
 
     // if the character is space, silence for 7 units of silence representing space between words and then continue
     // to avoid adding the extra space between characters in the next block of code
-    if (data[i] == ' ')
-    {
-      silence(7);
+    if (data[i] == ' ') {
+      pause(7);
       continue;
     }
 
 
     // play character at data[i]
-    // if (i != data.length - 1 && data[i] != " " && data[++i] != " ")
-    //    play 3 unit of silence indicating space between parts characters
-  }
-  
-}
-
-
-
-
-void silence(int time)
-{
-  delay(time * UNIT_LENGTH_MILLIS);
-}
-
-void play(int time)
-{
-  digitalWrite(BUZZER, HIGH);
-  delay(time * UNIT_LENGTH_MILLIS);
-  digitalWrite(BUZZER, LOW);
-}
-
-
-
-class Morse
-{
-  public:
-    char character;
-    int code[5];
-
-    Morse(char ch, int temp_code[5]) {
-      character = ch;
-
-      for (int i = 0; i < 5; i++)
+    for (int j = 0; j < 36; j++)
+    {
+      if(data[i] == alphabetRepresentation[j].character)
       {
-        code[i] = temp_code[i];
+        for(int k = 0; k < 6; k++)
+        {
+          play(alphabetRepresentation[j].code[k]);
+          if(alphabetRepresentation[j].code[k] != 9)
+          {
+            pause(1);
+          }
+        }
       }
     }
-};
 
-Morse alphabetRepresentation[36] = 
-{
-  Morse ('a', {1, 0, 3}),
+
+    // after playing the character, pause for 3 units of time denoting space between characters in a word
+    // except if we're at the end or currently at space or the next character is a space
+    if(i != data.length() - 1 && data[i] != " " && data[i++] != " ")
+    {
+      pause(3);
+    }
+
+  }
 }
+
+
+
+
