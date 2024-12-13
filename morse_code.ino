@@ -92,29 +92,37 @@ void loop() {
   data.toLowerCase();
 
   for (int i = 0; i < data.length(); i++) {
+    char character = data[i];
 
-    Serial.println(data[i]);
+    Serial.println(character);
 
     // if the character is space, silence for 7 units of silence representing space between words and then continue
     // to avoid adding the extra space between characters in the next block of code
-    if (data[i] == ' ') {
+    if (character == ' ') {
       pause(7);
       continue;
     }
 
 
-    // play character at data[i]
+    // play character
     for (int j = 0; j < 36; j++)
     {
-      if(data[i] == alphabetRepresentation[j].character)
+      // if the character is successfully found
+      // that is if it is an alphabet or number
+      if(character == alphabetRepresentation[j].character)
       {
         for(int k = 0; k < 6; k++)
         {
-          play(alphabetRepresentation[j].code[k]);
-          if(alphabetRepresentation[j].code[k] != 9)
+          // if 9 is reached in the morse representation quit and go to the next character
+          if(alphabetRepresentation[j].code[k] == 9)
           {
-            pause(1);
+            break;
           }
+
+          // play the corresponding part of the character with a single pause after
+          // denoting seperation between parts of the smae character
+          play(alphabetRepresentation[j].code[k]);
+          pause(1);
         }
       }
     }
@@ -122,7 +130,7 @@ void loop() {
 
     // after playing the character, pause for 3 units of time denoting space between characters in a word
     // except if we're at the end or currently at space or the next character is a space
-    if(i != data.length() - 1 && data[i] != " " && data[i++] != " ")
+    if(i != data.length() - 1 && data[i] != " " && data[i + 1] != " ")
     {
       pause(3);
     }
