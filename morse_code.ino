@@ -1,7 +1,7 @@
 #define BUZZER 9
 #define BAUD_RATE 115200
 
-#define UNIT_LENGTH_MILLIS 100
+#define UNIT_LENGTH_MILLIS 70
 
 
 class Morse {
@@ -94,7 +94,7 @@ void loop() {
   for (int i = 0; i < data.length(); i++) {
     char character = data[i];
 
-    Serial.println(character);
+    Serial.print(character);
 
     // if the character is space, silence for 7 units of silence representing space between words and then continue
     // to avoid adding the extra space between characters in the next block of code
