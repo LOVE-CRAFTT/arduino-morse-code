@@ -136,6 +136,9 @@ void loop() {
     }
 
   }
+
+  // new line after the last word
+  Serial.println();
 }
 
 
